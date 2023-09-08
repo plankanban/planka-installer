@@ -33,6 +33,7 @@ function install_updates {
     fi
 }
 
+
 function install_packages {
     echo -e "\e[1;100m####     2. Needed packages\e[0m"
     echo -e "\e[1;104m#Installing needed packages\e[0m"
@@ -43,6 +44,7 @@ function install_packages {
         echo -e "\e[0;31m#Error while getting packages updates\e[0m"
     fi
 }
+
 
 function install_docker {
     echo -e "\e[1;100m####     3. Docker\e[0m"
@@ -63,6 +65,7 @@ function install_docker {
     fi
 }
 
+
 function install_planka {
     echo -e "\e[1;100m####     4. Installing Planka via docker-compose\e[0m"
     curl -fsSL $DOWNLOAD_URL_COMPOSE_FILE -o "$DIR/docker-compose.yml"
@@ -80,6 +83,7 @@ function install_planka {
         exit_clear
     fi
 }
+
 
 function install_proxy {
     echo -e "\e[1;100m####     5. Installing NGINX reverse proxy\e[0m"
@@ -99,6 +103,7 @@ function install_proxy {
     fi
 }
 
+
 function install_ssl {
     echo -e "\e[1;100m####     6. Installing Lets Encrypt Cerbot\e[0m"
     DEBIAN_FRONTEND=noninteractive apt-get install -y -qq snapd >/dev/null
@@ -107,13 +112,10 @@ function install_ssl {
     ln -s /snap/bin/certbot /usr/bin/certbot
 
     certbot --non-interactive --agree-tos -m "$email" --nginx -d "$base_url"
-
 }
 
 
 #=======================================================================================================================
-
-
 function plankainstallercomplete {
     if [ -f "$DIR/docker-compose.yml" ]; then
         dialog --title "ERROR" \
@@ -143,6 +145,7 @@ function plankainstallercomplete {
     echo -e "\e[1;100m######################################################\e[0m"
 }
 
+
 function plankainstallerwitouthssl {
     if [ -f "$DIR/docker-compose.yml" ]; then
         dialog --title "ERROR" \
@@ -171,6 +174,7 @@ function plankainstallerwitouthssl {
     echo -e "\e[1;100m######################################################\e[0m"
 }
 
+
 function remove_planka {
     if [ -d "$DIR" ]; then
         cd "$DIR"
@@ -196,6 +200,7 @@ function remove_planka {
     fi
 }
 
+
 function config {
     mkdir "$DIR"
     touch "$CONFIG_FILE"
@@ -210,6 +215,7 @@ function config {
 
 }
 
+
 function update {
     dialog --title "Would you like to continue?" \
     --backtitle "$MAINTITLE" \
@@ -223,34 +229,32 @@ function update {
     clear
 }
 
+
 function backup {
     curl -fsSL https://dl.couchmail.de/backup_restore.sh -o backup_restore.sh
     bash ./backup_restore.sh
 }
+
 
 function exit_clear {
     printf "\033c"
     exit
 }
 
-#=======================================================================================================================
 
+#=======================================================================================================================
 ##################################
 #         Program start         #
 ##################################
-
 # Dialog installieren
 apt update
 apt install dialog
 export LANG=C.UTF-8
 
 #=======================================================================================================================
-
-
 ##################################
 #         Start Dialog           #
 ##################################
-
 DIALOG_HEIGHT=30
 DIALOG_WIDTH=60
 DIALOG_CHOICE_HEIGHT=8
@@ -283,5 +287,4 @@ case $CHOICE in
     5) backup ;;
     6) exit_clear ;;
 esac
-
 #=======================================================================================================================

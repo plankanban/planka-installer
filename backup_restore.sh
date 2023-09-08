@@ -2,33 +2,35 @@
 
 # Stop on Error
 set -e
+MAINTITLE="Planka backup & restore by Daniel Hiller"
+BACKUP_DATETIME=$(date +"%Y-%m-%d_%H-%M-%S")
+BACKUP_DESTINATION=/opt/planka-backup
 
 PLANKA_DOCKER_CONTAINER_POSTGRES="planka_db"
 PLANKA_DOCKER_CONTAINER_PLANKA="planka"
-BACKUP_DESTINATION=/opt/planka/backup
 
 
 function backup {
-
 # Create Temporary folder
-BACKUP_DATETIME=$(date +"%Y-%m-%d_%H-%M-%S")
 mkdir -p $BACKUP_DESTINATION/$BACKUP_DATETIME-backup
 
 # Dump DB into SQL File
 echo -n "Exporting postgres database ... "
 docker exec -t $PLANKA_DOCKER_CONTAINER_POSTGRES pg_dumpall -c -U postgres > $BACKUP_DESTINATION/$BACKUP_DATETIME-backup/postgres.sql
-echo "Success!"
+echo "\e[1;32mSuccess!\e[0m"
 
 # Export Docker Voumes
 echo -n "Exporting user-avatars ... "
 docker run --rm --volumes-from $PLANKA_DOCKER_CONTAINER_PLANKA -v $BACKUP_DESTINATION/$BACKUP_DATETIME-backup:/backup ubuntu cp -r /app/public/user-avatars /backup/user-avatars
-echo "Success!"
+echo "\e[1;32mSuccess!\e[0m"
+
 echo -n "Exporting project-background-images ... "
 docker run --rm --volumes-from $PLANKA_DOCKER_CONTAINER_PLANKA -v $BACKUP_DESTINATION/$BACKUP_DATETIME-backup:/backup ubuntu cp -r /app/public/project-background-images /backup/project-background-images
-echo "Success!"
+echo "\e[1;32mSuccess!\e[0m"
+
 echo -n "Exporting attachments ... "
 docker run --rm --volumes-from $PLANKA_DOCKER_CONTAINER_PLANKA -v $BACKUP_DESTINATION/$BACKUP_DATETIME-backup:/backup ubuntu cp -r /app/private/attachments /backup/attachments
-echo "Success!"
+echo "\e[1;32mSuccess!\e[0m"
 
 # Create tgz
 echo -n "Creating final tarball $BACKUP_DATETIME-backup.tgz ... "
@@ -38,19 +40,18 @@ tar -czf $BACKUP_DESTINATION/$BACKUP_DATETIME-backup.tgz \
     $BACKUP_DATETIME-backup/user-avatars \
     $BACKUP_DATETIME-backup/project-background-images \
     $BACKUP_DATETIME-backup/attachments
-echo "Success!"
+echo "\e[1;32mSuccess!\e[0m"
 
 #Remove source files
 echo -n "Cleaning up temporary files and folders ... "
 rm -rf $BACKUP_DESTINATION/$BACKUP_DATETIME-backup
-echo "Success!"
+echo "\e[1;32mSuccess!\e[0m"
 
-echo "Backup Complete!"
-
+echo "\e[1;32mBackup Complete!\e[0m"
 }
 
-function restore {
 
+function restore {
 cd $BACKUP_DESTINATION
 
 files=() #blank the variable so its empty for next use
@@ -64,40 +65,41 @@ if [ ${#files[@]} -eq 0 ]; then
     clear
     echo "No backup files found in $directory"
 else
-    file=$(dialog --stdout --title "Restore Planka" --cancel-label "Back" --menu "Choose a file you want to restore:" 0 0 0 "${files[@]}")
+    file=$(dialog --backtitle "$MAINTITLE" --stdout --title "Restore Planka" --cancel-label "Back" --menu "Choose a file you want to restore:" 0 0 0 "${files[@]}")
     clear
 fi
 
-# Extract tgz archive
 PLANKA_BACKUP_ARCHIVE_TGZ="$file"
 PLANKA_BACKUP_ARCHIVE=$(basename $PLANKA_BACKUP_ARCHIVE_TGZ .tgz)
+
+# Extract tgz archive
 echo -n "Extracting tarball $PLANKA_BACKUP_ARCHIVE_TGZ ... "
 tar -xzf $PLANKA_BACKUP_ARCHIVE_TGZ
-echo "Success!"
+echo "\e[1;32mSuccess!\e[0m"
 
 # Import Database
 echo -n "Importing postgres database ... "
 cat $PLANKA_BACKUP_ARCHIVE/postgres.sql | docker exec -i $PLANKA_DOCKER_CONTAINER_POSTGRES psql -U postgres
-echo "Success!"
+echo "\e[1;32mSuccess!\e[0m"
 
 # Restore Docker Volumes
 echo -n "Importing user-avatars ... "
 docker run --rm --volumes-from $PLANKA_DOCKER_CONTAINER_PLANKA -v $BACKUP_DESTINATION/$PLANKA_BACKUP_ARCHIVE:/backup ubuntu cp -rf /backup/user-avatars /app/public/
-echo "Success!"
+echo "\e[1;32mSuccess!\e[0m"
+
 echo -n "Importing project-background-images ... "
 docker run --rm --volumes-from $PLANKA_DOCKER_CONTAINER_PLANKA -v $BACKUP_DESTINATION/$PLANKA_BACKUP_ARCHIVE:/backup ubuntu cp -rf /backup/project-background-images /app/public/
-echo "Success!"
+echo "\e[1;32mSuccess!\e[0m"
+
 echo -n "Importing attachments ... "
 docker run --rm --volumes-from $PLANKA_DOCKER_CONTAINER_PLANKA -v $BACKUP_DESTINATION/$PLANKA_BACKUP_ARCHIVE:/backup ubuntu cp -rf /backup/attachments /app/private/
-echo "Success!"
+echo "\e[1;32mSuccess!\e[0m"
 
 echo -n "Cleaning up temporary files and folders ... "
-
 rm -R $BACKUP_DESTINATION/$PLANKA_BACKUP_ARCHIVE
-echo "Success!"
+echo "\e[1;32mSuccess!\e[0m"
 
-echo "Restore complete!"
-
+echo "\e[1;32mRestore complete!\e[0m"
 }
 
 
