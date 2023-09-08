@@ -58,6 +58,7 @@ function install_docker {
     curl -fsSL https://get.docker.com -o get-docker.sh
     sh ./get-docker.sh >/dev/null
     DEBIAN_FRONTEND=noninteractive apt-get install -y -qq docker-compose >/dev/null
+    rm get-docker.sh
 
     ## Check docker service status
     systemctl restart docker
@@ -260,7 +261,8 @@ function remove_planka {
 
 
 function config {
-    mkdir -p "$INSTALL_DIR"/{cron,backup,logs}
+    mkdir -p "$INSTALL_DIR"/{cron,backup,logs/app}
+    chmod -R 777 "$INSTALL_DIR"/logs/app
     touch "$CONFIG_FILE"
 
     base_url=$(dialog --backtitle "$MAINTITLE" --inputbox "Please enter the Domain or Subdomain, you want to use for Planka.      Do NOT enter http:// or https://).     Like planka.example.com" 15 60 3>&1 1>&2 2>&3 3>&-)
