@@ -1,12 +1,18 @@
 #!/bin/sh
 MAINTITLE="Planka-installer by Daniel Hiller"
-DIR="/opt/planka"
-FILE="/opt/planka/docker-compose.yml"
-CONFIG_FILE=/opt/planka/.env
+INSTALL_DIR="/opt/planka"
+COMPOSE_FILE="$INSTALL_DIR/docker-compose.yml"
+CONFIG_FILE=$INSTALL_DIR/.env
 
-DOWNLOAD_URL_COMPOSE_FILE="https://github.com/plankanban/planka-installer/blob/main/docker-compose.yml"
-DOWNLOAD_URL_NGINX_CONFIG_FILE="https://github.com/plankanban/planka-installer/blob/main/backup_restore.sh"
+DOWNLOAD_URL_INSTALLER_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/installer.sh"
+DOWNLOAD_URL_BACKUP_RESTORE_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/backup_restore.sh"
+
+DOWNLOAD_URL_COMPOSE_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/docker-compose.yml"
+DOWNLOAD_URL_NGINX_CONFIG_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/config/nginx-planka.conf"
 DOWNLOAD_URL_BACKUP_CRON_SCRIPT_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/cron/backup_update.sh"
+DOWNLOAD_URL_FAIL2BAN_FILTER_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/config/fail2ban-filter.conf"
+DOWNLOAD_URL_FAIL2BAN_JAIL_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/config/fail2ban-jail.conf"
+
 #=======================================================================================================================
 
 ##################################
@@ -68,8 +74,8 @@ function install_docker {
 
 function install_planka {
     echo -e "\e[1;100m####     4. Installing Planka via docker-compose\e[0m"
-    curl -fsSL $DOWNLOAD_URL_COMPOSE_FILE -o "$DIR/docker-compose.yml"
-    cd "$DIR"
+    curl -fsSL $DOWNLOAD_URL_COMPOSE_FILE -o "$COMPOSE_FILE"
+    cd "$INSTALL_DIR"
     docker-compose up -d >/dev/null
     sleep 3
 
@@ -118,13 +124,57 @@ function install_ssl {
 function install_auto_backup_update {
     echo -e "\e[1;100m####     7. Installing Backup and update cronjob\e[0m"
     curl -fsSL $DOWNLOAD_URL_BACKUP_CRON_SCRIPT_FILE -o "/opt/planka/cron/backup_update.sh"
-    touch /var/log/planka-backup-update.log
-    crontab -l | { cat; echo "0 1 * * * /opt/planka/cron/backup_update.sh >> /var/log/planka-backup-update.log 2>&1"; } | crontab -
+    touch $INSTALL_DIR/logs/backup-update.log
+    crontab -l | { cat; echo "0 1 * * * /opt/planka/cron/backup_update.sh >> /opt/planka/log/backup-update.log 2>&1"; } | crontab -
 }
 
+
+function install_firewall_fail2ban {
+    SSH_PORT=$(dialog --backtitle "$MAINTITLE" --inputbox "Please enter your SSH port (defaul: 22)" 15 60 3>&1 1>&2 2>&3 3>&-)
+    clear
+    echo -e "\e[1;100m####     Installing UFW and Fail2Ban\e[0m"
+    echo -e "\e[1;104m#apt install is running\e[0m"
+
+    DEBIAN_FRONTEND=noninteractive apt-get install -y -qq ufw fail2ban >/dev/null
+
+    echo -e "\e[1;104m#Downloading Fail2ban config\e[0m"
+    curl -fsSL $DOWNLOAD_URL_FAIL2BAN_FILTER_FILE -o "/etc/fail2ban/filter.d/planka.conf"
+    curl -fsSL $DOWNLOAD_URL_FAIL2BAN_JAIL_FILE -o "/etc/fail2ban/jail.d/planka.local"
+
+    echo -e "\e[1;104m#Restarting Fail2ban\e[0m"
+    systemctl restart fail2ban
+    sleep 5
+    if
+        [ "$(systemctl is-active fail2ban)" = "active" ]; then
+        echo -e "\e[1;32m#Fail2Ban is installed and running\e[0m"
+
+    else
+            echo -e "\e[0;31m#Error...cannot start Fail2Ban service\e[0m"
+            exit 1
+    fi
+
+    echo -e "\e[1;104m#Installing Firewall rules\e[0m"
+    ufw default deny incoming
+    ufw default allow outgoing
+    ufw allow "$SSH_PORT"
+    ufw allow http
+    ufw allow https
+    ufw enable
+
+    if
+        [ "$(ufw status)" = "Status: active" ]; then
+        echo -e "\e[1;32m#Firewall is installed and running\e[0m"
+
+    else
+            echo -e "\e[0;31m#Error...cannot start Firewall service\e[0m"
+            ufw reset
+            ufw disable
+            exit 1
+    fi
+}
 #=======================================================================================================================
 function plankainstallercomplete {
-    if [ -f "$DIR/docker-compose.yml" ]; then
+    if [ -f "$COMPOSE_FILE" ]; then
         dialog --title "ERROR" \
         --backtitle "$MAINTITLE" \
         --msgbox 'ERROR...Planka is already installed' 15 60
@@ -155,7 +205,7 @@ function plankainstallercomplete {
 
 
 function plankainstallerwitouthssl {
-    if [ -f "$DIR/docker-compose.yml" ]; then
+    if [ -f "$COMPOSE_FILE" ]; then
         dialog --title "ERROR" \
         --backtitle "$MAINTITLE" \
         --msgbox 'ERROR...Planka is already installed' 15 60
@@ -185,24 +235,23 @@ function plankainstallerwitouthssl {
 
 
 function remove_planka {
-    if [ -d "$DIR" ]; then
-        cd "$DIR"
+    if [ -f "$COMPOSE_FILE" ]; then
+        cd "$INSTALL_DIR"
         docker-compose down
-        cd ../
-        rm -R "$DIR"
+        rm -R cron/ logs/ .env docker-compose.yml
         rm /etc/nginx/sites-enabled/planka
         service nginx restart
         dialog --backtitle "$MAINTITLE" \
         --title "Uninstall" \
-        --msgbox 'Planka and nginx config successfull deleted' 15 60
+        --msgbox 'Planka and nginx config successfull deleted( Backups will stay in place)' 15 60
         exit_clear
     else
         dialog --title "Planka is not installed" \
         --backtitle "$MAINTITLE" \
-        --yesno "What would you do?" 15 60
+        --yesno "Do you want to install Planka?" 15 60
         response=$?
         case $response in
-            0) bash installer.sh ;;
+            0) dialog_start_installer ;;
             1) exit_clear ;;
             255) exit_clear ;;
         esac
@@ -211,7 +260,7 @@ function remove_planka {
 
 
 function config {
-    mkdir "$DIR"
+    mkdir -p "$INSTALL_DIR"/{cron,backup,logs}
     touch "$CONFIG_FILE"
 
     base_url=$(dialog --backtitle "$MAINTITLE" --inputbox "Please enter the Domain or Subdomain, you want to use for Planka.      Do NOT enter http:// or https://).     Like planka.example.com" 15 60 3>&1 1>&2 2>&3 3>&-)
@@ -225,7 +274,7 @@ function config {
 }
 
 
-function update {
+function dialog_system_update {
     dialog --title "Would you like to continue?" \
     --backtitle "$MAINTITLE" \
     --yesno "All available system updates will be installed" 15 60
@@ -238,12 +287,41 @@ function update {
     clear
 }
 
-
-function backup {
-    curl -fsSL https://dl.couchmail.de/backup_restore.sh -o backup_restore.sh
-    bash ./backup_restore.sh
+function dialog_remove_planka {
+    dialog --title "Would you like to continue?" \
+    --backtitle "$MAINTITLE" \
+    --yesno "Planka will be deleted...Are you sure? " 15 60
+    response=$?
+     case $response in
+        0) remove_planka ;;
+        1) exit_clear ;;
+        255) exit_clear ;;
+    esac
+    clear
 }
 
+function dialog_install_firewall_fail2ban {
+    dialog --title "Would you like to continue?" \
+    --backtitle "$MAINTITLE" \
+    --yesno "This will install UFW and Fail2Ban" 15 60
+    response=$?
+     case $response in
+        0) install_firewall_fail2ban ;;
+        1) exit_clear ;;
+        255) exit_clear ;;
+    esac
+    clear
+}
+
+
+function backup {
+    curl -fsSL $DOWNLOAD_URL_BACKUP_RESTORE_FILE -o /opt/backup_restore.sh
+    bash /opt/backup_restore.sh
+}
+function dialog_start_installer {
+    curl -fsSL $DOWNLOAD_URL_INSTALLER_FILE -o /opt/planka_installer.sh
+    bash /opt/planka_installer.sh
+}
 
 function exit_clear {
     printf "\033c"
@@ -273,10 +351,12 @@ DIALOG_MENU="What should be done?"
 OPTIONS=(
     1 "Install complete package"
     2 "Install complete package without ssl"
-    3 "Update the system"
-    4 "Uninstall Planka"
-    5 "Backup and restore"
-    6 "Exit"
+    3 "Install Firewall and Fail2ban"
+    4 "Update the system"
+    5 "Uninstall Planka"
+    6 "Backup and restore"
+    7 "Update and restart installer"
+    10 "Exit"
 )
 
 CHOICE=$(dialog --clear \
@@ -291,9 +371,11 @@ clear
 case $CHOICE in
     1) plankainstallercomplete ;;
     2) plankainstallerwitouthssl ;;
-    3) update ;;
-    4) remove_planka ;;
-    5) backup ;;
-    6) exit_clear ;;
+    3) dialog_install_firewall_fail2ban ;;
+    4) dialog_system_update ;;
+    5) dialog_remove_planka ;;
+    6) dialog_backup ;;
+    7) dialog_dialog_start_installer ;;
+    10) exit_clear ;;
 esac
 #=======================================================================================================================
