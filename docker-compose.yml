@@ -16,6 +16,7 @@ services:
       - user-avatars:/app/public/user-avatars
       - project-background-images:/app/public/project-background-images
       - attachments:/app/private/attachments
+      - /opt/planka/logs:/app/logs
     ports:
       - 3000:1337
     environment:
