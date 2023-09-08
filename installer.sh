@@ -131,7 +131,7 @@ function install_auto_backup_update {
 
 
 function install_firewall_fail2ban {
-    SSH_PORT=$(dialog --backtitle "$MAINTITLE" --inputbox "Please enter your SSH port (defaul: 22)" 15 60 3>&1 1>&2 2>&3 3>&-)
+    SSH_PORT=$(dialog --backtitle "$MAINTITLE" --inputbox "Please enter your SSH port (default: 22)" 15 60 3>&1 1>&2 2>&3 3>&-)
     clear
     echo -e "\e[1;100m####     Installing UFW and Fail2Ban\e[0m"
     echo -e "\e[1;104m#apt install is running\e[0m"
@@ -155,22 +155,22 @@ function install_firewall_fail2ban {
     fi
 
     echo -e "\e[1;104m#Installing Firewall rules\e[0m"
-    ufw default deny incoming
-    ufw default allow outgoing
-    ufw allow "$SSH_PORT"
-    ufw allow http
-    ufw allow https
-    ufw enable
+    ufw default deny incoming >/dev/null
+    ufw default allow outgoing >/dev/null
+    echo "y" | ufw allow "$SSH_PORT" >/dev/null
+    ufw allow http >/dev/null
+    ufw allow https >/dev/null
+    echo "y" | ufw enable >/dev/null
 
     if
-        [ "$(ufw status)" = "Status: active" ]; then
+        [ "$(ufw status | grep "Status: active")" = "Status: active" ]; then
         echo -e "\e[1;32m#Firewall is installed and running\e[0m"
 
     else
-            echo -e "\e[0;31m#Error...cannot start Firewall service\e[0m"
-            ufw reset
-            ufw disable
-            exit 1
+        echo -e "\e[0;31m#Error...cannot start Firewall service\e[0m"
+        echo "y" | ufw reset >/dev/null
+        echo "y" | ufw disable >/dev/null
+        exit 1
     fi
 }
 #=======================================================================================================================
@@ -261,7 +261,8 @@ function remove_planka {
 
 
 function config {
-    mkdir -p "$INSTALL_DIR"/{cron,backup,logs/app}
+    mkdir -p "$INSTALL_DIR"/{cron,backup}
+    mkdir -p "$INSTALL_DIR"/logs/app
     chmod -R 777 "$INSTALL_DIR"/logs/app
     touch "$CONFIG_FILE"
 
@@ -312,7 +313,6 @@ function dialog_install_firewall_fail2ban {
         1) exit_clear ;;
         255) exit_clear ;;
     esac
-    clear
 }
 
 
@@ -377,7 +377,7 @@ case $CHOICE in
     4) dialog_system_update ;;
     5) dialog_remove_planka ;;
     6) dialog_backup ;;
-    7) dialog_dialog_start_installer ;;
+    7) dialog_start_installer ;;
     10) exit_clear ;;
 esac
 #=======================================================================================================================
