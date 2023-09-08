@@ -6,7 +6,7 @@ CONFIG_FILE=/opt/planka/.env
 
 DOWNLOAD_URL_COMPOSE_FILE="https://github.com/plankanban/planka-installer/blob/main/docker-compose.yml"
 DOWNLOAD_URL_NGINX_CONFIG_FILE="https://github.com/plankanban/planka-installer/blob/main/backup_restore.sh"
-
+DOWNLOAD_URL_BACKUP_CRON_SCRIPT_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/cron/backup_update.sh"
 #=======================================================================================================================
 
 ##################################
@@ -115,6 +115,13 @@ function install_ssl {
 }
 
 
+function install_auto_backup_update {
+    echo -e "\e[1;100m####     7. Installing Backup and update cronjob\e[0m"
+    curl -fsSL $DOWNLOAD_URL_BACKUP_CRON_SCRIPT_FILE -o "/opt/planka/cron/backup_update.sh"
+    touch /var/log/planka-backup-update.log
+    crontab -l | { cat; echo "0 1 * * * /opt/planka/cron/backup_update.sh >> /var/log/planka-backup-update.log 2>&1"; } | crontab -
+}
+
 #=======================================================================================================================
 function plankainstallercomplete {
     if [ -f "$DIR/docker-compose.yml" ]; then
@@ -136,6 +143,7 @@ function plankainstallercomplete {
     install_planka
     install_proxy
     install_ssl
+    install_auto_backup_update
 
     echo -e "\e[1;100m######################################################\e[0m"
     echo -e "\e[1;32mThe installation was completed successfully!\e[0m"
@@ -165,6 +173,7 @@ function plankainstallerwitouthssl {
     install_docker
     install_planka
     install_proxy
+    install_auto_backup_update
 
     echo -e "\e[1;100m######################################################\e[0m"
     echo -e "\e[1;32mThe installation was completed successfully!\e[0m"
