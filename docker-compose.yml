@@ -1,0 +1,51 @@
+version: '3'
+services:
+  planka:
+    container_name: planka
+    image: ghcr.io/plankanban/planka:latest
+    command: >
+      bash -c
+        "for i in `seq 1 30`; do
+          ./start.sh &&
+          s=$$? && break || s=$$?;
+          echo \"Tried $$i times. Waiting 5 seconds...\";
+          sleep 5;
+        done; (exit $$s)"
+    restart: unless-stopped
+    volumes:
+      - user-avatars:/app/public/user-avatars
+      - project-background-images:/app/public/project-background-images
+      - attachments:/app/private/attachments
+    ports:
+      - 3000:1337
+    environment:
+      - TRUST_PROXY=0
+      - DATABASE_URL=postgresql://postgres@postgres/planka
+      - BASE_URL=${BASE_URL}
+      - SECRET_KEY=${SECRET_KEY}
+
+      # related: https://github.com/knex/knex/issues/2354
+      # As knex does not pass query parameters from the connection string we
+      # have to use environment variables in order to pass the desired values, e.g.
+      # - PGSSLMODE=<value>
+
+      # Configure knex to accept SSL certificates
+      # - KNEX_REJECT_UNAUTHORIZED_SSL_CERTIFICATE=false
+    depends_on:
+      - postgres
+
+  postgres:
+    container_name: planka_db
+    image: postgres:14-alpine
+    restart: unless-stopped
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=planka
+      - POSTGRES_HOST_AUTH_METHOD=trust
+
+volumes:
+  user-avatars:
+  project-background-images:
+  attachments:
+  db-data:
