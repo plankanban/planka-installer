@@ -3,9 +3,9 @@
 # Stop on Error
 set -e
 
-BACKUP_DATETIME=$(date +"%Y-%m-%d_%H-%M-%S")
-INSTALL_DIR=/opt/planka
-BACKUP_DESTINATION=$INSTALL_DIR/backup
+BACKUP_DATETIME="$(date +"%Y-%m-%d_%H-%M-%S")"
+INSTALL_DIR="/opt/planka"
+BACKUP_DESTINATION="$INSTALL_DIR/backup"
 
 
 PLANKA_DOCKER_CONTAINER_POSTGRES="planka_db"
