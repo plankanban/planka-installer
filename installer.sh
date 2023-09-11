@@ -316,7 +316,7 @@ function dialog_install_firewall_fail2ban {
 }
 
 
-function backup {
+function dialog_backup {
     curl -fsSL $DOWNLOAD_URL_BACKUP_RESTORE_FILE -o /opt/backup_restore.sh
     bash /opt/backup_restore.sh
 }
