@@ -4,7 +4,7 @@
 set -e
 
 BACKUP_DATETIME=$(date +"%Y-%m-%d_%H-%M-%S")
-BACKUP_DESTINATION=/opt/planka-backup
+BACKUP_DESTINATION=/opt/planka/backup
 INSTALL_FOLDER=/opt/planka
 
 PLANKA_DOCKER_CONTAINER_POSTGRES="planka_db"

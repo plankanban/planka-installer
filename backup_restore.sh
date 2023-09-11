@@ -4,7 +4,7 @@
 set -e
 MAINTITLE="Planka backup & restore by Daniel Hiller"
 BACKUP_DATETIME=$(date +"%Y-%m-%d_%H-%M-%S")
-BACKUP_DESTINATION=/opt/planka-backup
+BACKUP_DESTINATION=/opt/planka/backup
 
 PLANKA_DOCKER_CONTAINER_POSTGRES="planka_db"
 PLANKA_DOCKER_CONTAINER_PLANKA="planka"
