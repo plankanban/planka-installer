@@ -4,8 +4,9 @@
 set -e
 
 BACKUP_DATETIME=$(date +"%Y-%m-%d_%H-%M-%S")
-BACKUP_DESTINATION=/opt/planka/backup
-INSTALL_FOLDER=/opt/planka
+INSTALL_DIR=/opt/planka
+BACKUP_DESTINATION=$INSTALL_DIR/backup
+
 
 PLANKA_DOCKER_CONTAINER_POSTGRES="planka_db"
 PLANKA_DOCKER_CONTAINER_PLANKA="planka"
@@ -51,7 +52,7 @@ echo "\e[1;32mSuccess!\e[0m"
 echo "\e[1;32mBackup Complete!\e[0m"
 
 echo -n "Updating Planka...."
-cd $INSTALL_FOLDER
+cd $INSTALL_DIR
 docker pull ghcr.io/plankanban/planka:latest
 docker-compose --env-file .env up -d
 echo "\e[1;32mSuccess!\e[0m"
