@@ -727,19 +727,21 @@ if command -v dialog >/dev/null; then
     echo -e "\e[1;100m####   Welcome to the  Planka installer   ####\e[0m"
     sleep 2
     dialog_main
-else
-    if command -v apt-get >/dev/null; then
-        apt update && apt install dialog -y
-    elif command -v yum >/dev/null; then
-        yum install dialog -y
-    else
-        echo -e "Your OS is not Supported"
-        exit
-    fi
+elif command -v apt-get >/dev/null; then
+    apt update && apt install dialog -y
     clear
     echo -e "\e[1;100m####   Welcome to the  Planka installer   ####\e[0m"
     sleep 2
     dialog_main
+elif command -v yum >/dev/null; then
+    yum install dialog -y
+    clear
+    echo -e "\e[1;100m####   Welcome to the  Planka installer   ####\e[0m"
+    sleep 2
+    dialog_main
+else
+    echo -e "Your OS is not Supported"
+    exit
 fi
 
 
