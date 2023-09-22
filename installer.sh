@@ -441,6 +441,7 @@ function restore {
 function remove_planka {
     if [ -f "$COMPOSE_FILE" ]; then
         cd "$INSTALL_DIR"
+        clear
         docker compose down
         docker volume rm planka_attachments
         docker volume rm planka_project-background-images
@@ -527,7 +528,6 @@ function dialog_remove_planka {
         1) exit_clear ;;
         255) exit_clear ;;
     esac
-    clear
 }
 
 
