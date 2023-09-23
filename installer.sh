@@ -120,7 +120,7 @@ function install_docker {
 
 
 function install_planka {
-    echo -e "\e[1;100m####     4. Installing Planka via docker-compose\e[0m"
+    echo -e "\e[1;100m####     4. Installing Planka via docker compose\e[0m"
     curl -fsSL $DOWNLOAD_URL_COMPOSE_FILE -o "$COMPOSE_FILE"
     cd "$INSTALL_DIR"
     docker compose up -d >/dev/null
@@ -549,7 +549,7 @@ function dialog_config {
 
     CONFIG_OPTIONS=(
         1 "Install Fail2ban and Firewall"
-        2 "Admin user settings"
+        # 2 "Admin user settings"
         3 "Go Back"
         4 "Exit"
     )
@@ -565,7 +565,7 @@ function dialog_config {
     clear
     case $CONFIG_CHOICE in
         1) dialog_install_firewall_fail2ban ;;
-        2) dialog_admin_user ;;
+        # 2) dialog_admin_user ;;
         3) dialog_main ;;
         4) exit_clear ;;
     esac
