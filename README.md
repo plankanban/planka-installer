@@ -85,6 +85,11 @@ You can re-install Planka by using the "Uninstall Planka" Option in the installe
 
 *No matter which option was chosen, backups are never deleted*
 
+## Some notes
++ No i will not support your favarite Linux distro
++ No i will not support Windows
++ No pull requests, because of typos
+
 ## License
 
 [AGPL-3.0 license](https://github.com/plankanban/planka-installer/blob/main/LICENSE)
