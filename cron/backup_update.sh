@@ -54,7 +54,7 @@ echo "\e[1;32mBackup Complete!\e[0m"
 echo -n "Updating Planka...."
 cd $INSTALL_DIR
 docker pull ghcr.io/plankanban/planka:latest
-docker-compose --env-file .env up -d
+docker compose --env-file .env up -d
 echo "\e[1;32mSuccess!\e[0m"
 
 echo "\e[1;32mUpdate Complete!\e[0m"
