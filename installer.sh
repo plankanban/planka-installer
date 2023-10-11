@@ -104,7 +104,7 @@ function install_docker {
     else
         echo -e "Your OS is not Supported"
     fi
-
+    systemctl enable docker --now
     rm -f get-docker.sh
 
     ## Check docker service status
