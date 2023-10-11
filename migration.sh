@@ -19,7 +19,7 @@ curl -fsSL $DOWNLOAD_URL_CRON_FILE -o /etc/cron.daily/planka-cron
 
 touch $INSTALL_DIR/logs/cron.log
 chmod +x /opt/planka/cron/*.sh
-
+chmod +x /etc/cron.daily/planka-cron
 
 rm /opt/planka/logs/installer_update.log
 

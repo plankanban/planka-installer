@@ -203,7 +203,7 @@ function install_cronjobs {
 
     touch $INSTALL_DIR/logs/cron.log
     chmod +x /opt/planka/cron/*.sh
-
+    chmod +x /etc/cron.daily/planka-cron
 }
 
 
