@@ -21,12 +21,4 @@ touch $INSTALL_DIR/logs/cron.log
 chmod +x /opt/planka/cron/*.sh
 chmod +x /etc/cron.daily/planka-cron
 
-rm /opt/planka/logs/installer_update.log
-
-if [ -f "/var/spool/cron/crontabs/root" ]; then
-    rm /var/spool/cron/crontabs/root
-fi
-
-if [ -f "/var/spool/cron/root" ]; then
-    rm /var/spool/cron/root
-fi
+rm -f /opt/planka/logs/installer_update.log /opt/planka/cron/backup_update.sh /var/spool/cron/crontabs/root /var/spool/cron/root
