@@ -468,6 +468,50 @@ function remove_planka {
     fi
 }
 
+function remove_planka_full {
+    if [ -f "$COMPOSE_FILE" ]; then
+        clear
+        cd "$INSTALL_DIR"
+        docker compose down
+        docker volume rm planka_attachments
+        docker volume rm planka_project-background-images
+        docker volume rm planka_user-avatars
+        docker volume rm planka_db-data
+        rm -Rf cron/ logs/ .env docker-compose.yml
+        rm -f /etc/nginx/sites-enabled/planka.conf
+        rm -f /etc/nginx/conf.d/planka.conf
+            if command -v apt-get >/dev/null; then
+                DEBIAN_FRONTEND=noninteractive apt-get purge -y -qq docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-buildx-plugin nginx >/dev/null
+                rm -f /etc/apt/sources.list.d/docker.list
+                rm -f /etc/apt/keyrings/docker.gpg
+                rm -rf /var/lib/docker
+            elif command -v yum >/dev/null; then
+                yum remove docker-ce docker-ce-cli containerd.io docker-compose-plugin docker-buildx-plugin docker-compose-plugin nginx -y -q >/dev/null
+                rm -f /etc/yum.repos.d/docker-ce.repo
+                rm -rf /var/lib/docker
+            else
+                echo -e "Your OS is not Supported"
+            fi
+        certbot unregister --non-interactive
+        snap remove certbot
+        rm -Rf /etc/letsencrypt
+
+        dialog --backtitle "$MAINTITLE" \
+        --title "Uninstall" \
+        --msgbox 'Planka and all installed packages are deleted( Backups will stay in place)' 15 60
+        exit_clear
+    else
+        dialog --title "Planka is not installed" \
+        --backtitle "$MAINTITLE" \
+        --yesno "Do you want to install Planka?" 15 60
+        response=$?
+        case $response in
+            0) dialog_start_installer ;;
+            1) exit_clear ;;
+            255) exit_clear ;;
+        esac
+    fi
+}
 
 function config {
     mkdir -p "$INSTALL_DIR"/{cron,backup}
