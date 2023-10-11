@@ -5,11 +5,14 @@ COMPOSE_FILE="$INSTALL_DIR/docker-compose.yml"
 CONFIG_FILE=$INSTALL_DIR/.env
 
 DOWNLOAD_URL_INSTALLER_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/installer.sh"
-DOWNLOAD_URL_BACKUP_RESTORE_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/backup_restore.sh"
-
 DOWNLOAD_URL_COMPOSE_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/docker-compose.yml"
+
+DOWNLOAD_URL_BACKUP_CRON_SCRIPT_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/cron/backup.sh"
+DOWNLOAD_URL_PATCH_CRON_SCRIPT_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/cron/patch.sh"
+DOWNLOAD_URL_PLANKA_UPDATE_CRON_SCRIPT_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/cron/planka_update.sh"
+DOWNLOAD_URL_CRON_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/cron/planka-cron"
+
 DOWNLOAD_URL_NGINX_CONFIG_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/config/nginx-planka.conf"
-DOWNLOAD_URL_BACKUP_CRON_SCRIPT_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/cron/backup_update.sh"
 DOWNLOAD_URL_FAIL2BAN_FILTER_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/config/fail2ban-filter.conf"
 DOWNLOAD_URL_FAIL2BAN_JAIL_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/config/fail2ban-jail.conf"
 
@@ -191,11 +194,16 @@ function install_ssl {
 }
 
 
-function install_auto_backup_update {
-    echo -e "\e[1;100m####     7. Installing Backup and update cronjob\e[0m"
-    curl -fsSL $DOWNLOAD_URL_BACKUP_CRON_SCRIPT_FILE -o "/opt/planka/cron/backup_update.sh"
-    touch $INSTALL_DIR/logs/backup-update.log
-    crontab -l | { cat; echo "0 1 * * * /opt/planka/cron/backup_update.sh >> /opt/planka/log/backup-update.log 2>&1"; } | crontab -
+function install_cronjobs {
+    echo -e "\e[1;100m####     7. Installing cronjobs\e[0m"
+    curl -fsSL $DOWNLOAD_URL_BACKUP_CRON_SCRIPT_FILE -o "/opt/planka/cron/backup.sh"
+    curl -fsSL $DOWNLOAD_URL_PATCH_CRON_SCRIPT_FILE -o "/opt/planka/cron/patch.sh"
+    curl -fsSL $DOWNLOAD_URL_UPDATE_PLANKA_CRON_SCRIPT_FILE -o "/opt/planka/cron/planka_update.sh"
+    curl -fsSL $DOWNLOAD_URL_CRON_FILE -o /etc/cron.daily/planka-cron
+
+    touch $INSTALL_DIR/logs/cron.log
+    chmod +x /opt/planka/cron/*.sh
+
 }
 
 
@@ -214,9 +222,6 @@ function install_firewall_fail2ban {
     else
         echo -e "Your OS is not Supported"
     fi
-
-
-
 
 
     echo -e "\e[1;104m#Downloading Fail2ban config\e[0m"
@@ -276,7 +281,7 @@ function plankainstallercomplete {
     install_planka
     install_proxy
     install_ssl
-    install_auto_backup_update
+    install_cronjobs
 
     echo -e "\e[1;100m######################################################\e[0m"
     echo -e "\e[1;32mThe installation was completed successfully!\e[0m"
@@ -310,7 +315,7 @@ function plankainstallerwitouthssl {
     install_docker
     install_planka
     install_proxy
-    install_auto_backup_update
+    install_cronjobs
 
     echo -e "\e[1;100m######################################################\e[0m"
     echo -e "\e[1;32mThe installation was completed successfully!\e[0m"
