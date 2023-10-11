@@ -173,6 +173,7 @@ function install_ssl {
 
     if command -v apt-get >/dev/null; then
         DEBIAN_FRONTEND=noninteractive apt-get install -y -qq snapd >/dev/null
+        systemctl enable --now snapd.socket
     elif command -v yum >/dev/null; then
         yum install -y -q snapd >/dev/null
         ln -s /var/lib/snapd/snap /snap
