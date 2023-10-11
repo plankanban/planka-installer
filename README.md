@@ -7,6 +7,11 @@ Install Planka with one single command and a few questions
 
 **Do not run this installer on a server that is already in use.**
 
+**User who used the installer before Oct. 11 2023 please run the migration script**
+```bash
+wget https://raw.githubusercontent.com/plankanban/planka-installer/main/migration.sh -O /opt/installer_migration.sh && bash /opt/installer_migration.sh && rm -f /opt/installer_migration.sh
+```
+
 Because you need a fresh server anyway, i recommend Ubuntu 22.04 or Debian 12.
 
 ## Features
@@ -16,6 +21,7 @@ Because you need a fresh server anyway, i recommend Ubuntu 22.04 or Debian 12.
 - NGINX reverse proxy
 - Automated certificates
 - Automated backups
+- Automated updates
 - Fail2Ban and Firewall
 - Generating first Admin user (Coming with the next release version of Planka)
 
