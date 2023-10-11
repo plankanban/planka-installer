@@ -198,7 +198,7 @@ function install_cronjobs {
     echo -e "\e[1;100m####     7. Installing cronjobs\e[0m"
     curl -fsSL $DOWNLOAD_URL_BACKUP_CRON_SCRIPT_FILE -o "/opt/planka/cron/backup.sh"
     curl -fsSL $DOWNLOAD_URL_PATCH_CRON_SCRIPT_FILE -o "/opt/planka/cron/patch.sh"
-    curl -fsSL $DOWNLOAD_URL_UPDATE_PLANKA_CRON_SCRIPT_FILE -o "/opt/planka/cron/planka_update.sh"
+    curl -fsSL $DOWNLOAD_URL_PLANKA_UPDATE_CRON_SCRIPT_FILE -o "/opt/planka/cron/planka_update.sh"
     curl -fsSL $DOWNLOAD_URL_CRON_FILE -o /etc/cron.daily/planka-cron
 
     touch $INSTALL_DIR/logs/cron.log
