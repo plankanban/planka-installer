@@ -271,8 +271,7 @@ function plankainstallercomplete {
     sleep 2
 
     config
-    # echo -e "BASE_URL=https://$base_url\nSECRET_KEY=$secret_key\nDEFAULT_ADMIN_EMAIL=$email\nDEFAULT_ADMIN_NAME=$name\nDEFAULT_ADMIN_USERNAME=$username\nDEFAULT_ADMIN_PASSWORD=$password" >>"$CONFIG_FILE"
-    echo -e "BASE_URL=https://$base_url\nSECRET_KEY=$secret_key" >>"$CONFIG_FILE"
+    echo -e "BASE_URL=https://$base_url\nSECRET_KEY=$secret_key\nDEFAULT_ADMIN_EMAIL=$email\nDEFAULT_ADMIN_NAME=$name\nDEFAULT_ADMIN_USERNAME=$username\nDEFAULT_ADMIN_PASSWORD=$password" >>"$CONFIG_FILE"
     certbot_email=$(dialog --backtitle "$MAINTITLE" --inputbox "Please enter a VALID email address to issue a certificate via certbot" 15 60 3>&1 1>&2 2>&3 3>&-)
     clear
     install_updates
@@ -286,10 +285,8 @@ function plankainstallercomplete {
     echo -e "\e[1;100m######################################################\e[0m"
     echo -e "\e[1;32mThe installation was completed successfully!\e[0m"
     echo -e "Open https://"$base_url" to access Planka"
-    echo -e "Username: demo@demo.demo"
-    echo -e "Password: demo"
-    # echo -e "Username: $username"
-    # echo -e "Password: $password"
+    echo -e "Username: $username"
+    echo -e "Password: $password"
     echo -e "\e[1;100m######################################################\e[0m"
 }
 
@@ -306,8 +303,7 @@ function plankainstallerwitouthssl {
     sleep 2
 
     config
-    # echo -e "BASE_URL=http://$base_url\nSECRET_KEY=$secret_key\nDEFAULT_ADMIN_EMAIL=$email\nDEFAULT_ADMIN_NAME=$name\nDEFAULT_ADMIN_USERNAME=$username\nDEFAULT_ADMIN_PASSWORD=$password" >>"$CONFIG_FILE"
-    echo -e "BASE_URL=http://$base_url\nSECRET_KEY=$secret_key" >>"$CONFIG_FILE"
+    echo -e "BASE_URL=http://$base_url\nSECRET_KEY=$secret_key\nDEFAULT_ADMIN_EMAIL=$email\nDEFAULT_ADMIN_NAME=$name\nDEFAULT_ADMIN_USERNAME=$username\nDEFAULT_ADMIN_PASSWORD=$password" >>"$CONFIG_FILE"
 
     clear
     install_updates
@@ -320,10 +316,8 @@ function plankainstallerwitouthssl {
     echo -e "\e[1;100m######################################################\e[0m"
     echo -e "\e[1;32mThe installation was completed successfully!\e[0m"
     echo -e "Open http://"$base_url" to access Planka"
-    echo -e "Username: demo@demo.demo"
-    echo -e "Password: demo"
-    # echo -e "Username: $username"
-    # echo -e "Password: $password"
+    echo -e "Username: $username"
+    echo -e "Password: $password"
     echo -e "\e[1;100m######################################################\e[0m"
 }
 
@@ -526,11 +520,10 @@ function config {
     touch "$CONFIG_FILE"
 
     base_url=$(dialog --backtitle "$MAINTITLE" --inputbox "Please enter the Domain or Subdomain, you want to use for Planka.      Do NOT enter http:// or https://).     Like planka.example.com" 15 60 3>&1 1>&2 2>&3 3>&-)
-    # email=$(dialog --backtitle "$MAINTITLE" --inputbox "Please enter a email address for the first admin user" 15 60 3>&1 1>&2 2>&3 3>&-)
-    # name=$(dialog --backtitle "$MAINTITLE" --inputbox "Please enter the name of the first admin user" 15 60 3>&1 1>&2 2>&3 3>&-)
-    # username=$(dialog --backtitle "$MAINTITLE" --inputbox "Please enter a username for the first admin user" 15 60 3>&1 1>&2 2>&3 3>&-)
-    # password=$(dialog --backtitle "$MAINTITLE" --passwordbox "Please enter a password for the first admin user" 15 60 3>&1 1>&2 2>&3 3>&-)
-    # password_hash=$(mkpasswd -m md5crypt "$password")
+    email=$(dialog --backtitle "$MAINTITLE" --inputbox "Please enter a email address for the first admin user" 15 60 3>&1 1>&2 2>&3 3>&-)
+    name=$(dialog --backtitle "$MAINTITLE" --inputbox "Please enter the name of the first admin user" 15 60 3>&1 1>&2 2>&3 3>&-)
+    username=$(dialog --backtitle "$MAINTITLE" --inputbox "Please enter a username for the first admin user" 15 60 3>&1 1>&2 2>&3 3>&-)
+    password=$(dialog --backtitle "$MAINTITLE" --passwordbox "Please enter a password for the first admin user" 15 60 3>&1 1>&2 2>&3 3>&-)
     secret_key=$(openssl rand -hex 64)
 
 }
@@ -599,7 +592,7 @@ function dialog_config {
 
     CONFIG_OPTIONS=(
         1 "Install Fail2ban and Firewall"
-        # 2 "Admin user settings"
+        2 "Admin user settings"
         3 "Go Back"
         4 "Exit"
     )
@@ -615,7 +608,7 @@ function dialog_config {
     clear
     case $CONFIG_CHOICE in
         1) dialog_install_firewall_fail2ban ;;
-        # 2) dialog_admin_user ;;
+        2) dialog_admin_user ;;
         3) dialog_main ;;
         4) exit_clear ;;
     esac
@@ -760,7 +753,7 @@ function dialog_main {
         4) dialog_backup ;;
         5) dialog_start_installer ;;
         6) dialog_system_update ;;
-        7) dialog_restart_planka ;;
+        7) restart_planka ;;
         8) dialog_remove_planka ;;
         10) exit_clear ;;
     esac
