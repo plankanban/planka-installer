@@ -1,17 +1,8 @@
-version: '3'
 services:
   planka:
     container_name: planka
     image: ghcr.io/plankanban/planka:latest
-    command: >
-      bash -c
-        "for i in `seq 1 30`; do
-          ./start.sh &&
-          s=$$? && break || s=$$?;
-          echo \"Tried $$i times. Waiting 5 seconds...\";
-          sleep 5;
-        done; (exit $$s)"
-    restart: unless-stopped
+    restart: on-failure
     volumes:
       - user-avatars:/app/public/user-avatars
       - project-background-images:/app/public/project-background-images
@@ -20,34 +11,28 @@ services:
     ports:
       - 3000:1337
     environment:
-      - TRUST_PROXY=0
       - DATABASE_URL=postgresql://postgres@postgres/planka
-      - BASE_URL=${BASE_URL}
-      - SECRET_KEY=${SECRET_KEY}
-      - DEFAULT_ADMIN_EMAIL=${DEFAULT_ADMIN_EMAIL}
-      - DEFAULT_ADMIN_PASSWORD=${DEFAULT_ADMIN_PASSWORD}
-      - DEFAULT_ADMIN_NAME=${DEFAULT_ADMIN_NAME}
-      - DEFAULT_ADMIN_USERNAME=${DEFAULT_ADMIN_USERNAME}
-
-      # related: https://github.com/knex/knex/issues/2354
-      # As knex does not pass query parameters from the connection string we
-      # have to use environment variables in order to pass the desired values, e.g.
-      # - PGSSLMODE=<value>
-
-      # Configure knex to accept SSL certificates
-      # - KNEX_REJECT_UNAUTHORIZED_SSL_CERTIFICATE=false
+      - TRUST_PROXY=0
+    env_file:
+        - .env
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
 
   postgres:
     container_name: planka_db
     image: postgres:14-alpine
-    restart: unless-stopped
+    restart: on-failure
     volumes:
       - db-data:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=planka
       - POSTGRES_HOST_AUTH_METHOD=trust
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d planka"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 volumes:
   user-avatars:

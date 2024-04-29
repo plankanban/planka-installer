@@ -663,8 +663,8 @@ function dialog_admin_user {
             && dialog --title "Success" --backtitle "$MAINTITLE" --msgbox "New Email: $email Please restart Planka" 15 60 && dialog_admin_user ;;
 
         4) password=$(dialog --backtitle "$MAINTITLE" --passwordbox "Please enter a new password" 15 60 3>&1 1>&2 2>&3 3>&-) \
-            && password_hash=$(mkpasswd -m md5crypt "$password") \
-            && password_put="DEFAULT_ADMIN_PASSWORD=$password_hash" \
+#            && password_hash=$(mkpasswd -m md5crypt "$password") \
+            && password_put="DEFAULT_ADMIN_PASSWORD=$password" \
             && sed -i "s/DEFAULT_ADMIN_PASSWORD.*/$password_put/g" "$CONFIG_FILE" \
             && dialog --title "Success" --backtitle "$MAINTITLE" --msgbox "New Password: $password Please restart Planka" 15 60 && dialog_admin_user ;;
 
