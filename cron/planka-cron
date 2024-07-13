@@ -15,7 +15,14 @@ echo "$(date +'%d.%m.%y - %H:%M') - Setting permissions...." >> /opt/planka/logs
 chmod +x /opt/planka/cron/*.sh >> /opt/planka/logs/cron.log 2>&1;
 
 echo "$(date +'%d.%m.%y - %H:%M') - Executing tasks..." >> /opt/planka/logs/cron.log 2>&1;
+
+echo "$(date +'%d.%m.%y - %H:%M') - Patching Planka installer scripts..." >> /opt/planka/logs/cron.log 2>&1;
 /opt/planka/cron/patch.sh >> /opt/planka/logs/cron.log 2>&1;
+
+echo "$(date +'%d.%m.%y - %H:%M') - Backing up Planka..." >> /opt/planka/logs/cron.log 2>&1;
 /opt/planka/cron/backup.sh >> /opt/planka/logs/cron.log 2>&1;
+
+echo "$(date +'%d.%m.%y - %H:%M') - Updating Planka..." >> /opt/planka/logs/cron.log 2>&1;
 /opt/planka/cron/planka_update.sh >> /opt/planka/logs/cron.log 2>&1;
 
+echo "$(date +'%d.%m.%y - %H:%M') - Daily cron done..." >> /opt/planka/logs/cron.log 2>&1;
