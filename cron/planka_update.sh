@@ -1,5 +1,5 @@
 #!/bin/bash
-
+INSTALL_DIR="/opt/planka"
 # Stop on Error
 set -e
 
