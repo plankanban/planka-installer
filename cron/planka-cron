@@ -5,6 +5,8 @@ DOWNLOAD_URL_INSTALLER_FILE="https://raw.githubusercontent.com/plankanban/planka
 DOWNLOAD_URL_PATCH_CRON_SCRIPT_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/cron/patch.sh"
 DOWNLOAD_URL_CRON_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/cron/planka-cron"
 
+echo " " >> "$log_file" 2>&1
+echo " " >> "$log_file" 2>&1
 echo "$(date +'%d.%m.%y - %H:%M') - Starting Daily cron..." >> "$log_file" 2>&1
 echo "$(date +'%d.%m.%y - %H:%M') - Downloading files..." >> "$log_file" 2>&1
 
