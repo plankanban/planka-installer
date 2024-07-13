@@ -4,12 +4,18 @@ DOWNLOAD_URL_INSTALLER_FILE="https://raw.githubusercontent.com/plankanban/planka
 DOWNLOAD_URL_PATCH_CRON_SCRIPT_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/cron/patch.sh"
 DOWNLOAD_URL_CRON_FILE="https://raw.githubusercontent.com/plankanban/planka-installer/main/cron/planka-cron"
 
-curl -fsSL $DOWNLOAD_URL_CRON_FILE -o /etc/cron.daily/planka-cron
-curl -fsSL $DOWNLOAD_URL_INSTALLER_FILE -o /opt/planka_installer.sh
-curl -fsSL $DOWNLOAD_URL_PATCH_CRON_SCRIPT_FILE -o /opt/planka/cron/patch.sh
+echo "$(date +'%d.%m.%y - %H:%M') - Starting Daily cron..." >> /opt/planka/logs/cron.log 2>&1;
+echo "$(date +'%d.%m.%y - %H:%M') - Downloading files..." >> /opt/planka/logs/cron.log 2>&1;
 
+# curl -fsSL $DOWNLOAD_URL_CRON_FILE -o /etc/cron.daily/planka-cron;
+curl -fsSL $DOWNLOAD_URL_INSTALLER_FILE -o /opt/planka_installer.sh;
+# curl -fsSL $DOWNLOAD_URL_PATCH_CRON_SCRIPT_FILE -o /opt/planka/cron/patch.sh;
 
-chmod +x /opt/planka/cron/*.sh
-/opt/cron/patch.sh >> /opt/planka/logs/cron.log 2>&1
-/opt/planka/cron/backup.sh >> /opt/planka/logs/cron.log 2>&1
-/opt/planka/cron/planka_update.sh >> /opt/planka/logs/cron.log 2>&1
+echo "$(date +'%d.%m.%y - %H:%M') - Setting permissions...." >> /opt/planka/logs/cron.log 2>&1
+chmod +x /opt/planka/cron/*.sh >> /opt/planka/logs/cron.log 2>&1;
+
+echo "$(date +'%d.%m.%y - %H:%M') - Executing tasks..." >> /opt/planka/logs/cron.log 2>&1;
+/opt/planka/cron/patch.sh >> /opt/planka/logs/cron.log 2>&1;
+/opt/planka/cron/backup.sh >> /opt/planka/logs/cron.log 2>&1;
+/opt/planka/cron/planka_update.sh >> /opt/planka/logs/cron.log 2>&1;
+
