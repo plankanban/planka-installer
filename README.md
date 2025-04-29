@@ -1,7 +1,7 @@
 
-# Planka-installer
+# Planka Installer
 
-Install Planka with one single command and a few questions
+Install Planka with one single command and a few questions.
 
 ## READ BEFORE INSTALL
 
