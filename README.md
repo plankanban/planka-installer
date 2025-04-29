@@ -7,95 +7,98 @@ Install Planka with one single command and a few questions
 
 **Do not run this installer on a server that is already in use.**
 
-**User who used the installer before Oct. 11 2023 please run the migration script**
+Since you need a fresh server, I recommend using Ubuntu 22.04 or Debian 12.
+
+**Users who used the installer before October 11, 2023, should run the migration script.**
+
+To do so, use the following command:
+
 ```bash
 wget https://raw.githubusercontent.com/plankanban/planka-installer/main/migration.sh -O /opt/installer_migration.sh && bash /opt/installer_migration.sh && rm -f /opt/installer_migration.sh
 ```
 
-Because you need a fresh server anyway, i recommend Ubuntu 22.04 or Debian 12.
-
 ## Features
 
-- Installing all needed packages
-- Installing Planka
-- NGINX reverse proxy
-- Automated certificates
-- Automated backups
-- Automated updates
-- Fail2Ban and Firewall
-- Generating first Admin user (Coming with the next release version of Planka)
-
+- Installs all required packages
+- Installs Planka
+- Configures Nginx reverse proxy
+- Automates SSL certificates
+- Automates backups
+- Automates updates
+- Configures Fail2Ban and Firewall
+- Creates the first admin user
 
 ## Roadmap
 
-- Cleanup the code
-- Consider more features
+- Clean up the code
+- Consider additional features
 
-## Supported OS
+### Supported Operating Systems
 
-| Ubuntu | Debian | CentOS |
-|---|---|---|
-| 20.04 | 11 | Stream 8 |
-| 22.04 | 12 | Stream 9 |
-
-
+| Ubuntu    | Debian    | CentOS       |
+|-----------|-----------|--------------|
+| 20.04     | 11        | Stream 8     |
+| 22.04     | 12        | Stream 9     |
 
 ## Installation
+
+Run the following command to start the installation process:
 
 ```bash
 wget https://raw.githubusercontent.com/plankanban/planka-installer/main/installer.sh -O /opt/planka_installer.sh && bash /opt/planka_installer.sh
 ```
 
-### SSL Setup
-You need to have a valid DNS-entry that points to your server.
+#### SSL Setup
 
-Your server needs to be reachable from port 80 and 443.
+- You must have a valid DNS entry that points to your server.
+- Your server needs to be reachable on ports 80 and 443.
+- A valid email address is required for SSL certificates.
 
-A valid mail address is required.
-
-
-## Informations
+## Overview
 
 ### Demo
-See the installer in action https://www.youtube.com/watch?v=0Qya8iLDnq0
+See the installer in action: https://www.youtube.com/watch?v=0Qya8iLDnq0
 
-![Installer Demo](img/installer.jpeg)
+![Installer](img/installer.jpeg)
 
+## Backups
+Backups will be stored here:
 
-### Backups
-Backup will be stored here
 ```bash
 /opt/planka/backup
 ```
 
-### Logs
-You can find all logs here
+## Logs
+Logs can be found here:
+
 ```bash
 /opt/planka/logs
 ```
 
-### Uninstalling / Reinstalling
+## Uninstalling / Reinstalling
 
-You can re-install Planka by using the "Uninstall Planka" Option in the installer
-#### Option 1 light
-+ Delete Planka Containers
-+ Delete all docker volumes
-+ Delete the configuration of nginx
+You can reinstall Planka using the "Uninstall Planka" option in the installer.
 
-#### Option 2 Full (Coming soon)
-+ all of option 1
-+ revoke ssl certificate( SSL Setup)
-+ delete acme accounts( SSL Setup)
-+ remove all installed packages(docker nginx certbot( SSL Setup))
-+ remove addet reposetories
+### Option 1: Light
+- Delete Planka containers
+- Delete all Docker volumes
+- Delete the Nginx configuration
 
-*No matter which option was chosen, backups are never deleted*
+### Option 2: Full (Coming Soon)
+- All of Option 1
+- Revoke SSL certificates (SSL Setup)
+- Delete ACME accounts (SSL Setup)
+- Remove all installed packages (Docker, Nginx, Certbot, etc.)
+- Remove added repositories
 
-## Some notes
-+ No i will not support your favorite Linux distro
-+ No i will not support Windows
-+ No pull requests, because of typos
+*Note: No matter which option is chosen, backups are never deleted.*
+
+## Some Notes
+
+- No, I will not support your favorite Linux distribution.
+- No, I will not support Windows.
+- No pull requests for typo fixes.
 
 ## License
 
-[AGPL-3.0 license](https://github.com/plankanban/planka-installer/blob/main/LICENSE)
+[AGPL-3.0 License](https://github.com/plankanban/planka-installer/blob/main/LICENSE)
