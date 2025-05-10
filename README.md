@@ -1,7 +1,7 @@
 
-# Planka Installer
+# PLANKA Installer
 
-Install Planka with one single command and a few questions.
+Install PLANKA with one single command and a few questions.
 
 ## READ BEFORE INSTALL
 
@@ -20,7 +20,7 @@ wget https://raw.githubusercontent.com/plankanban/planka-installer/main/migratio
 ## Features
 
 - Installs all required packages
-- Installs Planka
+- Installs PLANKA
 - Configures Nginx reverse proxy
 - Automates SSL certificates
 - Automates backups
@@ -77,10 +77,10 @@ Logs can be found here:
 
 ## Uninstalling / Reinstalling
 
-You can reinstall Planka using the "Uninstall Planka" option in the installer.
+You can reinstall PLANKA using the "Uninstall Planka" option in the installer.
 
 ### Option 1: Light
-- Delete Planka containers
+- Delete PLANKA containers
 - Delete all Docker volumes
 - Delete the Nginx configuration
 
