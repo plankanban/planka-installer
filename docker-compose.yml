@@ -4,27 +4,25 @@ services:
     image: ghcr.io/plankanban/planka:latest
     restart: on-failure
     volumes:
-      - user-avatars:/app/public/user-avatars
-      - project-background-images:/app/public/project-background-images
-      - attachments:/app/private/attachments
+      - data:/app/data
       - /opt/planka/logs/app:/app/logs
     ports:
-      - 3000:1337
+      - 127.0.0.1:3000:1337
     environment:
       - DATABASE_URL=postgresql://postgres@postgres/planka
-      - TRUST_PROXY=0
+      - TRUST_PROXY=true
     env_file:
-        - .env
+      - .env
     depends_on:
       postgres:
         condition: service_healthy
 
   postgres:
     container_name: planka_db
-    image: postgres:14-alpine
+    image: postgres:18-alpine
     restart: on-failure
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - db-data:/var/lib/postgresql
     environment:
       - POSTGRES_DB=planka
       - POSTGRES_HOST_AUTH_METHOD=trust
@@ -35,7 +33,5 @@ services:
       retries: 5
 
 volumes:
-  user-avatars:
-  project-background-images:
-  attachments:
+  data:
   db-data:

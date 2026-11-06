@@ -7,15 +7,7 @@ Install PLANKA with one single command and a few questions.
 
 **Do not run this installer on a server that is already in use.**
 
-Since you need a fresh server, I recommend using Ubuntu 22.04 or Debian 12.
-
-**Users who used the installer before October 11, 2023, should run the migration script.**
-
-To do so, use the following command:
-
-```bash
-wget https://raw.githubusercontent.com/plankanban/planka-installer/main/migration.sh -O /opt/installer_migration.sh && bash /opt/installer_migration.sh && rm -f /opt/installer_migration.sh
-```
+Since you need a fresh server, use Debian 13 or Ubuntu 26.04 LTS. Other operating systems are not supported.
 
 ## Features
 
@@ -35,10 +27,9 @@ wget https://raw.githubusercontent.com/plankanban/planka-installer/main/migratio
 
 ### Supported Operating Systems
 
-| Ubuntu    | Debian    | CentOS       |
-|-----------|-----------|--------------|
-| 20.04     | 11        | Stream 8     |
-| 22.04     | 12        | Stream 9     |
+| Ubuntu    | Debian    |
+|-----------|-----------|
+| 26.04 LTS | 13        |
 
 ## Installation
 
@@ -68,6 +59,8 @@ Backups will be stored here:
 /opt/planka/backup
 ```
 
+You can create a backup or restore one at any time from the "Backup and restore" menu of the installer.
+
 ## Logs
 Logs can be found here:
 
@@ -79,19 +72,12 @@ Logs can be found here:
 
 You can reinstall PLANKA using the "Uninstall Planka" option in the installer.
 
-### Option 1: Light
-- Delete PLANKA containers
-- Delete all Docker volumes
-- Delete the Nginx configuration
+The uninstall option:
+- Deletes the PLANKA containers
+- Deletes all Docker volumes
+- Deletes the Nginx configuration
 
-### Option 2: Full (Coming Soon)
-- All of Option 1
-- Revoke SSL certificates (SSL Setup)
-- Delete ACME accounts (SSL Setup)
-- Remove all installed packages (Docker, Nginx, Certbot, etc.)
-- Remove added repositories
-
-*Note: No matter which option is chosen, backups are never deleted.*
+*Note: Backups are never deleted.*
 
 ## Some Notes
 
